@@ -59,7 +59,20 @@ ch_mesh = chebyshev_mesh(a,b,n)
 x = ch_mesh
 y = x**2
 bary = barycentric_lagrange(x,y,'chebyshev')
+x = np.linspace(a,b,100)
+y = np.array([bary(x[i]) for i in range(len(x))])
+plt.plot(x,y)
 
+x = eq_mesh
+y = x**2
+bary = barycentric_lagrange(x,y,'equal')
+x = np.linspace(a,b,100)
+y = np.array([bary(x[i]) for i in range(len(x))])
+plt.plot(x,y)
+
+x_nodes = np.array([-.5,0,.5,1])
+y_nodes = np.array([.8,1,3,8])
+bary = barycentric_lagrange(x_nodes,y_nodes,'equal')
 x = np.linspace(a,b,100)
 y = np.array([bary(x[i]) for i in range(len(x))])
 plt.plot(x,y)
@@ -76,11 +89,34 @@ def divided_diff(x_arr,y_arr):
         i += 1
     return α
 
-x = np.array([-2,0,.5,1])
-y = np.array([-1,1,3,8])
-
-def newton(x_arr,y_arr):
-    α = divided_diff(x_arr,y_arr)
-    s = α[-1]
+def horner(x,α,x_arr):
+    n = len(x_arr)
+    # p = α[-1] + (x - x_arr[-1])
+    p = α[-1]
     for i in range(n-2,-1,-1):
-        
+        p = p * (x - x_arr[i]) + α[i]
+    return p
+
+# def newton(x,α,x_arr):
+#     # p = α[-1] + (x - x_arr[-1])
+#     ω = np.array([x-x_arr[i] for i in range(len(x_arr)-1)])
+#     for i in range(n-2,-1,-1):
+#         p = p * (x - x_arr[i]) + α[i]
+#     return p
+
+x_nodes = np.array([-2,0,.5,1])
+y_nodes = np.array([-1,1,3,8])
+α = divided_diff(x_nodes,y_nodes)
+x = np.linspace(a,b,100)
+y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
+plt.plot(x,y)
+
+
+
+x_nodes = np.array([1,2,3],dtype='float')
+y_nodes = np.array([1,4,9],dtype='float')
+α = divided_diff(x_nodes,y_nodes)
+x = np.linspace(a,b,100)
+y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
+plt.plot(x,y)
+
