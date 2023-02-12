@@ -67,5 +67,20 @@ plt.plot(x,y)
 def divided_diff(x_arr,y_arr):
     n = len(x_arr)
     α = np.zeros(n)
-    return None
+    α[0] = y_arr[0]
+    f = y_arr
+    i = 1
+    while i < n:
+        f = np.array([(f[j]-f[j-1])/(x_arr[j+i-1]-x_arr[j-1]) for j in range(1,len(f))])
+        α[i] = f[0]
+        i += 1
+    return α
 
+x = np.array([-2,0,.5,1])
+y = np.array([-1,1,3,8])
+
+def newton(x_arr,y_arr):
+    α = divided_diff(x_arr,y_arr)
+    s = α[-1]
+    for i in range(n-2,-1,-1):
+        
