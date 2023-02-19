@@ -33,10 +33,6 @@ def barycentric_weights(h,n,mesh_type):
             β[i] = ((-1)**i)*np.sin((2*i+1)*np.pi/(2*n)) # formula is slightly altered since n represents number of nodes
         elif mesh_type == 'equal':
             β[i] = (binom_coeff(n-1,i)*(-1)**(n-1-i))/denom
-            # if i == 0:
-            #     β[i] = 1
-            # else:
-            #     β[i] = -β[i-1]*(n-1-i)/(i+1) # formula is slightly altered since n represents number of nodes
     return β
 
 def barycentric_lagrange(x_arr,y_arr,mesh_type):    
@@ -56,26 +52,26 @@ n = 3
 eq_mesh = np.linspace(a,b,n)
 ch_mesh = chebyshev_mesh(a,b,n)
 
-x = ch_mesh
-y = x**2
-bary = barycentric_lagrange(x,y,'chebyshev')
-x = np.linspace(a,b,100)
-y = np.array([bary(x[i]) for i in range(len(x))])
-plt.plot(x,y)
+# x = ch_mesh
+# y = x**2
+# bary = barycentric_lagrange(x,y,'chebyshev')
+# x = np.linspace(a,b,100)
+# y = np.array([bary(x[i]) for i in range(len(x))])
+# plt.plot(x,y)
 
-x = eq_mesh
-y = x**2
-bary = barycentric_lagrange(x,y,'equal')
-x = np.linspace(a,b,100)
-y = np.array([bary(x[i]) for i in range(len(x))])
-plt.plot(x,y)
+# x = eq_mesh
+# y = x**2
+# bary = barycentric_lagrange(x,y,'equal')
+# x = np.linspace(a,b,100)
+# y = np.array([bary(x[i]) for i in range(len(x))])
+# plt.plot(x,y)
 
-x_nodes = np.array([-.5,0,.5,1])
-y_nodes = np.array([.8,1,3,8])
-bary = barycentric_lagrange(x_nodes,y_nodes,'equal')
-x = np.linspace(a,b,100)
-y = np.array([bary(x[i]) for i in range(len(x))])
-plt.plot(x,y)
+# x_nodes = np.array([-.5,0,.5,1])
+# y_nodes = np.array([.8,1,3,8])
+# bary = barycentric_lagrange(x_nodes,y_nodes,'equal')
+# x = np.linspace(a,b,100)
+# y = np.array([bary(x[i]) for i in range(len(x))])
+# plt.plot(x,y)
 
 def divided_diff(x_arr,y_arr):
     n = len(x_arr)
@@ -97,26 +93,46 @@ def horner(x,α,x_arr):
         p = p * (x - x_arr[i]) + α[i]
     return p
 
-# def newton(x,α,x_arr):
-#     # p = α[-1] + (x - x_arr[-1])
-#     ω = np.array([x-x_arr[i] for i in range(len(x_arr)-1)])
-#     for i in range(n-2,-1,-1):
-#         p = p * (x - x_arr[i]) + α[i]
-#     return p
+# x_nodes = np.array([-2,0,.5,1])
+# y_nodes = np.array([-1,1,3,8])
+# α = divided_diff(x_nodes,y_nodes)
+# x = np.linspace(a,b,100)
+# y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
+# plt.plot(x,y)
 
-x_nodes = np.array([-2,0,.5,1])
-y_nodes = np.array([-1,1,3,8])
-α = divided_diff(x_nodes,y_nodes)
-x = np.linspace(a,b,100)
-y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
-plt.plot(x,y)
+# x_nodes = np.array([1,2,3],dtype='float')
+# y_nodes = np.array([1,4,9],dtype='float')
+# α = divided_diff(x_nodes,y_nodes)
+# x = np.linspace(a,b,100)
+# y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
+# plt.plot(x,y)
 
+def hermite_divided_diff(x_arr,y_arr,y_prime):
+    z_arr = np.repeat(x_arr,2)
+    f = np.repeat(y_arr,2)
+    y_p = np.repeat(y_prime,2)
+    n = len(z_arr)
+    α = np.zeros(n)
+    α[0] = y_arr[0]
+    i = 1
+    while i < n:
+        f = np.array([(f[j]-f[j-1])/(z_arr[j+i-1]-z_arr[j-1]) if z_arr[j+i-1] != z_arr[j-1] else y_p[j] for j in range(1,len(f))])
+        α[i] = f[0]
+        i += 1
+    return α
 
+def hermite(x,α,x_arr):
+    n = len(α)
+    z_arr = np.repeat(x_arr,2)
+    # p = α[-1] + (x - x_arr[-1])
+    p = α[-1]
+    for i in range(n-2,-1,-1):
+        p = p * (x - z_arr[i]) + α[i]
+    return p
 
-x_nodes = np.array([1,2,3],dtype='float')
-y_nodes = np.array([1,4,9],dtype='float')
-α = divided_diff(x_nodes,y_nodes)
-x = np.linspace(a,b,100)
-y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
-plt.plot(x,y)
-
+x_nodes = np.array([0,1,3])
+y_nodes = np.array([2,4,5])
+y_p_nodes = np.array([1,-1,-2])
+α = hermite_divided_diff(x_nodes,y_nodes,y_p_nodes)
+print(hermite(2,α,x_nodes))
+    
