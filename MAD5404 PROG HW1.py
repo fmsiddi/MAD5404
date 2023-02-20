@@ -155,10 +155,10 @@ def compute_M(x_arr,y_arr):
 def cubic_interp(x,x_arr,y_arr,M):
     n = len(x_arr)
     h = x_arr[1] - x_arr[0]
-    a = np.array([M[i+1] - M[i]/(6*h) for i in range(0,n-1)])
-    b = np.array([M[i]/2 for i in range(0,n-1)])
-    c = np.array([(y_arr[i+1] - y_arr[i])/h - (M[i+1] + 2*M[i])*h/6 for i in range(0,n-1)])
-    d = y_arr[:-1]
+    # a = np.array([M[i+1] - M[i]/(6*h) for i in range(0,n-1)])
+    # b = np.array([M[i]/2 for i in range(0,n-1)])
+    # c = np.array([(y_arr[i+1] - y_arr[i])/h - (M[i+1] + 2*M[i])*h/6 for i in range(0,n-1)])
+    # d = y_arr[:-1]
     if (x < x_arr[0]) or (x > x_arr[-1]):
         return print('desired input value {} is outside of interpolation range'.format(x))
     elif x in x_arr:
@@ -166,12 +166,22 @@ def cubic_interp(x,x_arr,y_arr,M):
     else:
         diff = x - x_arr
         i = np.where(diff>0)[0][-1]
-        return a[i]*(x-x_arr[i])**3 + b[i]*(x-x_arr[i])**2 + c[i]*(x-x_arr[i]) + d[i]
+        # return a[i]*(x-x_arr[i])**3 + b[i]*(x-x_arr[i])**2 + c[i]*(x-x_arr[i]) + d[i]
+        first_term = M[i]/6*(((x-x_arr[i+1])**3)/(-h) - (x- x_arr[i+1])*(x_arr[i]-x_arr[i+1]))
+        second_term = M[i+1]/6*(((x-x_arr[i])**3)/(-h) - (x- x_arr[i])*(x_arr[i]-x_arr[i+1]))
+        third_term = (y_arr[i]*(x-x_arr[i+1]) - y_arr[i+1]*(x-x_arr[i]))/(-h)
+        return first_term - second_term + third_term
     
 x_nodes = np.array([1,2,3,4,5])
 y_nodes = np.array([0,1,0,1,0])
 M = compute_M(x_nodes,y_nodes)
-print(cubic_interp(1.5,x_nodes,y_nodes,M))
+p = cubic_interp(1.5,x_nodes,y_nodes,M)
+
+a = 1
+b = 5
+plot_x = np.linspace(a,b,100)
+y = [cubic_interp(x,x_nodes,y_nodes,M) for x in plot_x]
+plt.plot(plot_x,y)
 
 
 
