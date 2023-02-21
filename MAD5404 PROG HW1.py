@@ -3,9 +3,11 @@ import math
 import matplotlib.pyplot as plt
 plt.style.use('seaborn')
 
+# FIRST TEST FUNCTION
 def func1(x):
     return (x-2)**9
 
+# SECOND TEST FUNCTION
 def func2(x):
     return 1/(1+x**2)
 
@@ -15,10 +17,15 @@ def chebyshev_mesh(a,b,n):
     r_term = (b-a)/2
     return np.array([l_term + z[i]*r_term for i in range(n)])
 
-def monomial(x_arr,y_arr):
+# MONOMIAL METHOD: TAKES ARRAY OF X NODES AND Y VALUES AND AN INPUT X AND RETURNS VALUE OF INTERPOLATION POLYNOMIAL AT X
+def monomial(x,x_arr,y_arr):
     n = len(x_arr)
     matrix = np.array([[x_arr[i]**j for j in range (n)] for i in range(n)])
-    return np.linalg.solve(matrix,y_arr)
+    a = np.linalg.solve(matrix,y_arr) # NOTE: I USE THE NUMPY LIBRARY TO SOLVE THE LINEAR SYSTEM
+    p = 0
+    for i in range(len(a)):
+        p += a[i]*(x**i)
+    return p
 
 def binom_coeff(n,k):
     return math.factorial(n)/(math.factorial(k)*math.factorial(n-k))
@@ -35,11 +42,11 @@ def barycentric_weights(h,n,mesh_type):
             β[i] = (binom_coeff(n-1,i)*(-1)**(n-1-i))/denom
     return β
 
+# RETURNS ANONYMOUS FUNCTION THAT WILL TAKE AN INPUT X AND RETURN VALUE OF INTERPOLATION POLYNOMIAL AT X
 def barycentric_lagrange(x_arr,y_arr,mesh_type):    
     n = len(x_arr)
     h = x_arr[1] - x_arr[0]
-    β_arr = barycentric_weights(h,n,mesh_type)
-    # print('weights:',β_arr)
+    β_arr = barycentric_weights(h,n,mesh_type) # COMPUTE BARYCENTRIC WEIGHTS
     return lambda z: np.sum(y_arr*β_arr/(z-x_arr))/np.sum(β_arr/(z-x_arr)) if z not in x_arr else y_arr[np.where(x_arr==z)[0][0]]
 
 # x = np.array([1,2,3],dtype='float')
@@ -73,6 +80,8 @@ ch_mesh = chebyshev_mesh(a,b,n)
 # y = np.array([bary(x[i]) for i in range(len(x))])
 # plt.plot(x,y)
 
+# COMPUTES EACH f[...] AT EACH LEVEL, KEEP THE ONE WE WILL USE AS THE COEFFICIENT AND STORE IT IN α, THEN REPEAT
+# RETURNS AN ARRAY OF COEFFICIENTS WE WILL USE IN THE NEWTON FORM OF INTERPOLATING POLYNOMIAL
 def divided_diff(x_arr,y_arr):
     n = len(x_arr)
     α = np.zeros(n)
@@ -80,11 +89,12 @@ def divided_diff(x_arr,y_arr):
     f = y_arr
     i = 1
     while i < n:
-        f = np.array([(f[j]-f[j-1])/(x_arr[j+i-1]-x_arr[j-1]) for j in range(1,len(f))])
+        f = np.array([(f[j]-f[j-1])/(x_arr[j+i-1]-x_arr[j-1]) for j in range(1,len(f))]) # DIVIDED DIFFERENCE
         α[i] = f[0]
         i += 1
     return α
 
+# TAKES INPUT X, ARRAY OF COEFFICIENTS, AND ARRAY OF X NODES AND RETURNS VALUE OF INTERPOLATING POLYNOMIAL AT X
 def horner(x,α,x_arr):
     n = len(x_arr)
     # p = α[-1] + (x - x_arr[-1])
@@ -107,14 +117,17 @@ def horner(x,α,x_arr):
 # y = np.array([horner(x[i],α,x_nodes) for i in range(len(x))])
 # plt.plot(x,y)
 
+# TAKES AN ARRAY OF X NODES, VALUES OF FUNCTION, AND VALUES OF DERIVATIVES, ALL AT THE X NODES
+# THEN COMPUTES DIVIDED DIFFERENCE USING THE HERMITE RULE
 def hermite_divided_diff(x_arr,y_arr,y_prime):
-    z_arr = np.repeat(x_arr,2)
-    f = np.repeat(y_arr,2)
+    z_arr = np.repeat(x_arr,2) # DUPLICATE X VALUES TO GET 2N VALUES
+    f = np.repeat(y_arr,2) # DUPLICATE Y VALUES TO GET 2N VALUES
     y_p = np.repeat(y_prime,2)
     n = len(z_arr)
     α = np.zeros(n)
     α[0] = y_arr[0]
     i = 1
+    # DIVIDED DIFFERENCE
     while i < n:
         f = np.array([(f[j]-f[j-1])/(z_arr[j+i-1]-z_arr[j-1]) if z_arr[j+i-1] != z_arr[j-1] else y_p[j] for j in range(1,len(f))])
         α[i] = f[0]
@@ -136,11 +149,12 @@ def hermite(x,α,x_arr):
 # α = hermite_divided_diff(x_nodes,y_nodes,y_p_nodes)
 # print(hermite(2,α,x_nodes))
 
+# COMPUTE M VALUES FOR NATURAL CUBIC SPLINES. RETURNS ARRAY OF M VALUES
 def compute_M(x_arr,y_arr):
     n = len(x_arr)
     A = np.zeros((n,n))
     np.fill_diagonal(A,2)
-    h = x_arr[1] - x_arr[0]
+    h = x_arr[1] - x_arr[0] # ASSUMES CONSTANT STEP SIZE
     μ = .5 # we set as constant since nodes are equidistant
     μ = np.tile(.5,n-1)
     μ[-1] = 0
@@ -150,38 +164,35 @@ def compute_M(x_arr,y_arr):
     z = np.zeros(n)
     for i in range(1,n-1):
         z[i] = (6/(2*h)) * ((y_arr[i+1]-y_arr[i])/h - (y_arr[i]-y_arr[i-1])/h)
-    return np.linalg.solve(A,z)
+    return np.linalg.solve(A,z) # NOTE: I USE THE NUMPY LIBRARY TO SOLVE THE LINEAR SYSTEM
 
+# TAKES X INPUT, X NODES, FUNCTION VALUES, AND M VALUES.
+# RETURNS VALUE OF CORRESPONDING CUBIC SPLINE AT X. THE CORRECT SPLINE FUNCTION TO USE IS DETERMINED IN THE IF STATEMENT
 def cubic_interp(x,x_arr,y_arr,M):
-    n = len(x_arr)
     h = x_arr[1] - x_arr[0]
-    # a = np.array([M[i+1] - M[i]/(6*h) for i in range(0,n-1)])
-    # b = np.array([M[i]/2 for i in range(0,n-1)])
-    # c = np.array([(y_arr[i+1] - y_arr[i])/h - (M[i+1] + 2*M[i])*h/6 for i in range(0,n-1)])
-    # d = y_arr[:-1]
     if (x < x_arr[0]) or (x > x_arr[-1]):
         return print('desired input value {} is outside of interpolation range'.format(x))
     elif x in x_arr:
         return y_arr[np.where(x==x_arr)][0]
     else:
         diff = x - x_arr
-        i = np.where(diff>0)[0][-1]
-        # return a[i]*(x-x_arr[i])**3 + b[i]*(x-x_arr[i])**2 + c[i]*(x-x_arr[i]) + d[i]
+        i = np.where(diff>0)[0][-1] # WE DETERMINE THE INDEX OF THE CUBIC SPLINE TO USE
+        # THE BELOW COMPOSITION WAS TAKEN FROM https://towardsdatascience.com/numerical-interpolation-natural-cubic-spline-52c1157b98ac
         first_term = M[i]/6*(((x-x_arr[i+1])**3)/(-h) - (x- x_arr[i+1])*(x_arr[i]-x_arr[i+1]))
         second_term = M[i+1]/6*(((x-x_arr[i])**3)/(-h) - (x- x_arr[i])*(x_arr[i]-x_arr[i+1]))
         third_term = (y_arr[i]*(x-x_arr[i+1]) - y_arr[i+1]*(x-x_arr[i]))/(-h)
         return first_term - second_term + third_term
     
-x_nodes = np.array([1,2,3,4,5])
-y_nodes = np.array([0,1,0,1,0])
-M = compute_M(x_nodes,y_nodes)
-p = cubic_interp(1.5,x_nodes,y_nodes,M)
+# x_nodes = np.array([1,2,3,4,5])
+# y_nodes = np.array([0,1,0,1,0])
+# M = compute_M(x_nodes,y_nodes)
+# p = cubic_interp(1.5,x_nodes,y_nodes,M)
 
-a = 1
-b = 5
-plot_x = np.linspace(a,b,100)
-y = [cubic_interp(x,x_nodes,y_nodes,M) for x in plot_x]
-plt.plot(plot_x,y)
+# a = 1
+# b = 5
+# plot_x = np.linspace(a,b,100)
+# y = [cubic_interp(x,x_nodes,y_nodes,M) for x in plot_x]
+# plt.plot(plot_x,y)
 
 
 
