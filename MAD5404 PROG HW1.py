@@ -406,3 +406,163 @@ ax6.plot(f_mesh, cub_f2, '-D', label='natural cubic splines', markevery=np.searc
 ax6.legend()
 
 plt.tight_layout()
+
+#%%
+
+# PARAMETERS
+
+a = -5
+b = 5
+n_small = 3
+n_med = 5
+n_big = 10
+
+#%%
+
+# FUNCTION 1, SMALL NUMBER OF CHEBYSHEV NODES
+f_mesh = np.linspace(a,b,101)
+f1_fine = func1(f_mesh)
+
+fig1, ((ax1,ax2,ax3)) = plt.subplots(1,3, sharey=True, figsize=(20,7))
+fig1.suptitle('f(x) = (x-2)^9 (Chebyshev Mesh)', fontsize=14)
+
+ax1.set_title('n = {}'.format(n_small))
+ax1.plot(f_mesh,f1_fine, label='f(x)')
+
+ch_mesh = chebyshev_mesh(a,b,n_small)[::-1]
+f1 = func1(ch_mesh)
+
+mono_f1 = np.array([monomial(x,ch_mesh,f1) for x in f_mesh])
+ax1.plot(f_mesh, mono_f1, '-D', label='monomial', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+bary = barycentric_lagrange(ch_mesh,f1,'chebyshev')
+lag_f1 = np.array([bary(x) for x in f_mesh])
+ax1.plot(f_mesh, lag_f1, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+α = divided_diff(ch_mesh,f1)
+newt_f1 = np.array([horner(x,α,ch_mesh) for x in f_mesh])
+ax1.plot(f_mesh, newt_f1, '-D', label='newton', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+ax1.legend()
+
+plt.tight_layout()
+
+# FUNCTION 1, MEDIUM NUMBER OF CHEBYSHEV NODES
+ax2.set_title('n = {}'.format(n_med))
+ax2.plot(f_mesh,f1_fine, label='f(x)')
+
+ch_mesh = chebyshev_mesh(a,b,n_med)[::-1]
+f1 = func1(ch_mesh)
+
+mono_f1 = np.array([monomial(x,ch_mesh,f1) for x in f_mesh])
+ax2.plot(f_mesh, mono_f1, '-D', label='monomial', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+bary = barycentric_lagrange(ch_mesh,f1,'chebyshev')
+lag_f1 = np.array([bary(x) for x in f_mesh])
+ax2.plot(f_mesh, lag_f1, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+α = divided_diff(ch_mesh,f1)
+newt_f1 = np.array([horner(x,α,ch_mesh) for x in f_mesh])
+ax2.plot(f_mesh, newt_f1, '-D', label='newton', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+ax2.legend()
+
+plt.tight_layout()
+
+# FUNCTION 1, LARGE NUMBER OF CHEBYSHEV NODES
+ax3.set_title('n = {}'.format(n_big))
+ax3.plot(f_mesh,f1_fine, label='f(x)')
+
+ch_mesh = chebyshev_mesh(a,b,n_big)[::-1]
+f1 = func1(ch_mesh)
+
+mono_f1 = np.array([monomial(x,ch_mesh,f1) for x in f_mesh])
+ax3.plot(f_mesh, mono_f1, '-D', label='monomial', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+bary = barycentric_lagrange(ch_mesh,f1,'chebyshev')
+lag_f1 = np.array([bary(x) for x in f_mesh])
+ax3.plot(f_mesh, lag_f1, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+α = divided_diff(ch_mesh,f1)
+newt_f1 = np.array([horner(x,α,ch_mesh) for x in f_mesh])
+ax3.plot(f_mesh, newt_f1, '-D', label='newton', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+ax3.legend()
+
+plt.tight_layout()
+
+
+
+
+# FUNCTION 2, SMALL NUMBER OF CHEBYSHEV NODES
+f_mesh = np.linspace(a,b,101)
+f2_fine = func2(f_mesh)
+
+fig2, ((ax4,ax5,ax6)) = plt.subplots(1,3, sharey=True, figsize=(20,7))
+fig2.suptitle('f(x) = 1/(1 + x^2) (Chebyshev Mesh)', fontsize=14)
+
+ax4.set_title('n = {}'.format(n_small))
+ax4.plot(f_mesh,f2_fine, label='f(x)')
+
+ch_mesh = chebyshev_mesh(a,b,n_small)[::-1]
+f2 = func2(ch_mesh)
+
+mono_f2 = np.array([monomial(x,ch_mesh,f2) for x in f_mesh])
+ax4.plot(f_mesh, mono_f2, '-D', label='monomial', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+bary = barycentric_lagrange(ch_mesh,f2,'chebyshev')
+lag_f2 = np.array([bary(x) for x in f_mesh])
+ax4.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+α = divided_diff(ch_mesh,f2)
+newt_f2 = np.array([horner(x,α,ch_mesh) for x in f_mesh])
+ax4.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+ax4.legend()
+
+plt.tight_layout()
+
+# FUNCTION 2, MEDIUM NUMBER OF CHEBYSHEV NODES
+ax5.set_title('n = {}'.format(n_med))
+ax5.plot(f_mesh,f2_fine, label='f(x)')
+
+ch_mesh = chebyshev_mesh(a,b,n_med)[::-1]
+f2 = func2(ch_mesh)
+
+mono_f2 = np.array([monomial(x,ch_mesh,f2) for x in f_mesh])
+ax5.plot(f_mesh, mono_f2, '-D', label='monomial', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+bary = barycentric_lagrange(ch_mesh,f2,'chebyshev')
+lag_f2 = np.array([bary(x) for x in f_mesh])
+ax5.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+α = divided_diff(ch_mesh,f2)
+newt_f2 = np.array([horner(x,α,ch_mesh) for x in f_mesh])
+ax5.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+ax5.legend()
+
+plt.tight_layout()
+
+# FUNCTION 2, LARGE NUMBER OF CHEBYSHEV NODES
+ax6.set_title('n = {}'.format(n_big))
+ax6.plot(f_mesh,f2_fine, label='f(x)')
+
+ch_mesh = chebyshev_mesh(a,b,n_big)[::-1]
+f2 = func2(ch_mesh)
+
+mono_f2 = np.array([monomial(x,ch_mesh,f2) for x in f_mesh])
+ax6.plot(f_mesh, mono_f2, '-D', label='monomial', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+bary = barycentric_lagrange(ch_mesh,f2,'chebyshev')
+lag_f2 = np.array([bary(x) for x in f_mesh])
+ax6.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+α = divided_diff(ch_mesh,f2)
+newt_f2 = np.array([horner(x,α,ch_mesh) for x in f_mesh])
+ax6.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,ch_mesh))
+
+ax6.legend()
+
+plt.tight_layout()
+
