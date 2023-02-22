@@ -196,22 +196,25 @@ def cubic_interp(x,x_arr,y_arr,M):
 
 #%%
 
-# MONOMIAL TESTS
+# PARAMETERS
 
 a = -5
 b = 5
-n_small = 5
-n_med = 25
-n_big = 100
-n=11
+n_small = 3
+n_med = 5
+n_big = 10
+
+#%%
+
+# FUNCTION 1, SMALL NUMBER OF EQUIDISTANT NODES
 f_mesh = np.linspace(a,b,101)
-f1 = func1(f_mesh)
+f1_fine = func1(f_mesh)
 
 fig1, ((ax1,ax2,ax3)) = plt.subplots(1,3, sharey=True, figsize=(20,7))
 fig1.suptitle('f(x) = (x-2)^9 (Equidistant Mesh)', fontsize=14)
 
-ax1.set_title('n = 5')
-ax1.plot(f_mesh,f1, label='f(x)')
+ax1.set_title('n = {}'.format(n_small))
+ax1.plot(f_mesh,f1_fine, label='f(x)')
 
 eq_mesh = np.linspace(a,b,n_small)
 f1 = func1(eq_mesh)
@@ -240,4 +243,166 @@ ax1.legend()
 
 plt.tight_layout()
 
+# FUNCTION 1, MEDIUM NUMBER OF EQUIDISTANT NODES
+ax2.set_title('n = {}'.format(n_med))
+ax2.plot(f_mesh,f1_fine, label='f(x)')
 
+eq_mesh = np.linspace(a,b,n_med)
+f1 = func1(eq_mesh)
+
+mono_f1 = np.array([monomial(x,eq_mesh,f1) for x in f_mesh])
+ax2.plot(f_mesh, mono_f1, '-D', label='monomial', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+bary = barycentric_lagrange(eq_mesh,f1,'equal')
+lag_f1 = np.array([bary(x) for x in f_mesh])
+ax2.plot(f_mesh, lag_f1, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+α = divided_diff(eq_mesh,f1)
+newt_f1 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
+ax2.plot(f_mesh, newt_f1, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+f1_prime = np.array([9*(x-2)**8 for x in eq_mesh])
+α = hermite_divided_diff(eq_mesh,f1,f1_prime)
+herm_f1 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+ax2.plot(f_mesh, herm_f1, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+M = compute_M(eq_mesh,f1)
+cub_f1 = [cubic_interp(x,eq_mesh,f1,M) for x in f_mesh]
+ax2.plot(f_mesh, cub_f1, '-D', label='natural cubic splines', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+ax2.legend()
+
+plt.tight_layout()
+
+# FUNCTION 1, LARGE NUMBER OF EQUIDISTANT NODES
+ax3.set_title('n = {}'.format(n_big))
+ax3.plot(f_mesh,f1_fine, label='f(x)')
+
+eq_mesh = np.linspace(a,b,n_big)
+f1 = func1(eq_mesh)
+
+mono_f1 = np.array([monomial(x,eq_mesh,f1) for x in f_mesh])
+ax3.plot(f_mesh, mono_f1, '-D', label='monomial', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+bary = barycentric_lagrange(eq_mesh,f1,'equal')
+lag_f1 = np.array([bary(x) for x in f_mesh])
+ax3.plot(f_mesh, lag_f1, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+α = divided_diff(eq_mesh,f1)
+newt_f1 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
+ax3.plot(f_mesh, newt_f1, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+f1_prime = np.array([9*(x-2)**8 for x in eq_mesh])
+α = hermite_divided_diff(eq_mesh,f1,f1_prime)
+herm_f1 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+ax3.plot(f_mesh, herm_f1, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+M = compute_M(eq_mesh,f1)
+cub_f1 = [cubic_interp(x,eq_mesh,f1,M) for x in f_mesh]
+ax3.plot(f_mesh, cub_f1, '-D', label='natural cubic splines', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+ax3.legend()
+
+plt.tight_layout()
+
+
+
+
+# FUNCTION 2, SMALL NUMBER OF EQUIDISTANT NODES
+f_mesh = np.linspace(a,b,101)
+f2_fine = func2(f_mesh)
+
+fig2, ((ax4,ax5,ax6)) = plt.subplots(1,3, sharey=True, figsize=(20,7))
+fig2.suptitle('f(x) = 1/(1 + x^2) (Equidistant Mesh)', fontsize=14)
+
+ax4.set_title('n = {}'.format(n_small))
+ax4.plot(f_mesh,f2_fine, label='f(x)')
+
+eq_mesh = np.linspace(a,b,n_small)
+f2 = func2(eq_mesh)
+
+mono_f2 = np.array([monomial(x,eq_mesh,f2) for x in f_mesh])
+ax4.plot(f_mesh, mono_f2, '-D', label='monomial', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+bary = barycentric_lagrange(eq_mesh,f2,'equal')
+lag_f2 = np.array([bary(x) for x in f_mesh])
+ax4.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+α = divided_diff(eq_mesh,f2)
+newt_f2 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
+ax4.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+# f2_prime = np.array([9*(x-2)**8 for x in eq_mesh])
+# α = hermite_divided_diff(eq_mesh,f2,f2_prime)
+# herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+# ax4.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+M = compute_M(eq_mesh,f2)
+cub_f2 = [cubic_interp(x,eq_mesh,f2,M) for x in f_mesh]
+ax4.plot(f_mesh, cub_f2, '-D', label='natural cubic splines', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+ax4.legend()
+
+plt.tight_layout()
+
+# FUNCTION 2, MEDIUM NUMBER OF EQUIDISTANT NODES
+ax5.set_title('n = {}'.format(n_med))
+ax5.plot(f_mesh,f2_fine, label='f(x)')
+
+eq_mesh = np.linspace(a,b,n_med)
+f2 = func2(eq_mesh)
+
+mono_f2 = np.array([monomial(x,eq_mesh,f2) for x in f_mesh])
+ax5.plot(f_mesh, mono_f2, '-D', label='monomial', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+bary = barycentric_lagrange(eq_mesh,f2,'equal')
+lag_f2 = np.array([bary(x) for x in f_mesh])
+ax5.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+α = divided_diff(eq_mesh,f2)
+newt_f2 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
+ax5.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+# f2_prime = np.array([9*(x-2)**8 for x in eq_mesh])
+# α = hermite_divided_diff(eq_mesh,f2,f2_prime)
+# herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+# ax5.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+M = compute_M(eq_mesh,f2)
+cub_f2 = [cubic_interp(x,eq_mesh,f2,M) for x in f_mesh]
+ax5.plot(f_mesh, cub_f2, '-D', label='natural cubic splines', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+ax5.legend()
+
+plt.tight_layout()
+
+# FUNCTION 2, LARGE NUMBER OF EQUIDISTANT NODES
+ax6.set_title('n = {}'.format(n_big))
+ax6.plot(f_mesh,f2_fine, label='f(x)')
+
+eq_mesh = np.linspace(a,b,n_big)
+f2 = func2(eq_mesh)
+
+mono_f2 = np.array([monomial(x,eq_mesh,f2) for x in f_mesh])
+ax6.plot(f_mesh, mono_f2, '-D', label='monomial', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+bary = barycentric_lagrange(eq_mesh,f2,'equal')
+lag_f2 = np.array([bary(x) for x in f_mesh])
+ax6.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+α = divided_diff(eq_mesh,f2)
+newt_f2 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
+ax6.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+# f2_prime = np.array([9*(x-2)**8 for x in eq_mesh])
+# α = hermite_divided_diff(eq_mesh,f2,f2_prime)
+# herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+# ax6.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+M = compute_M(eq_mesh,f2)
+cub_f2 = [cubic_interp(x,eq_mesh,f2,M) for x in f_mesh]
+ax6.plot(f_mesh, cub_f2, '-D', label='natural cubic splines', markevery=np.searchsorted(f_mesh,eq_mesh))
+
+ax6.legend()
+
+plt.tight_layout()
