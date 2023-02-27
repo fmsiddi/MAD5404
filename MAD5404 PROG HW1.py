@@ -204,6 +204,32 @@ n_small = 3
 n_med = 5
 n_big = 10
 
+f_mesh = np.linspace(a,b,101)
+n_array = np.array([1,2,3,4,5,10,20,30,40,50,60,70,80,90,100])
+
+
+error = np.zeros((len(n_array),5))
+for n in n_array:
+    x_nodes = np.linspace(a,b,n)
+    y_nodes = func1(x_nodes)
+    mono_f1 = np.array([monomial(x,x_nodes,y_nodes) for x in f_mesh])
+    
+    bary = barycentric_lagrange(x_nodes,y_nodes,'equal')
+    lag_f1 = np.array([bary(x) for x in f_mesh])
+    
+    α = divided_diff(x_nodes,y_nodes)
+    newt_f1 = np.array([horner(x,α,x_nodes) for x in f_mesh])
+    
+    f1_prime = np.array([9*(x-2)**8 for x in x_nodes])
+    α = hermite_divided_diff(x_nodes,y_nodes,f1_prime)
+    herm_f1 = np.array([hermite(x,α,x_nodes) for x in f_mesh])
+    
+    M = compute_M(x_nodes,y_nodes)
+    cub_f1 = [cubic_interp(x,x_nodes,y_nodes,M) for x in f_mesh]
+    
+    
+    
+
 #%%
 
 # FUNCTION 1, SMALL NUMBER OF EQUIDISTANT NODES
@@ -565,4 +591,7 @@ ax6.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh
 ax6.legend()
 
 plt.tight_layout()
+
+ #%%
+
 
