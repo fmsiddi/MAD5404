@@ -204,9 +204,10 @@ n_small = 3
 n_med = 5
 n_big = 10
 
+#%%
 f_mesh = np.linspace(a,b,101)
 f1_fine = func1(f_mesh)
-n_array = np.arange(2,38)
+n_array = np.arange(10,50)
 
 error = np.zeros((len(n_array),3))
 for i in range(len(n_array)):
@@ -214,12 +215,6 @@ for i in range(len(n_array)):
     y_nodes = func1(x_nodes)
     mono_f1 = np.array([monomial(x,x_nodes,y_nodes) for x in f_mesh])
     
-    # bary = barycentric_lagrange(x_nodes,y_nodes,'equal')
-    # lag_f1 = np.array([bary(x) for x in f_mesh])
-    
-    # α = divided_diff(x_nodes,y_nodes)
-    # newt_f1 = np.array([horner(x,α,x_nodes) for x in f_mesh])
-    
     f1_prime = np.array([9*(x-2)**8 for x in x_nodes])
     α = hermite_divided_diff(x_nodes,y_nodes,f1_prime)
     herm_f1 = np.array([hermite(x,α,x_nodes) for x in f_mesh])
@@ -232,31 +227,53 @@ for i in range(len(n_array)):
     error[i][2] = max(abs(f1_fine-cub_f1))
     
 fig, ax = plt.subplots()
-fig.suptitle('Number of Interpolation Nodes vs Interpolation Error', fontsize=14)
-ax.plot(n_array,error[:,0], label='polynomial')
-ax.plot(n_array,error[:,1], label='hermite')
+fig.suptitle('Number of Interpolation Nodes vs Interpolation Error\nf(x) = (x-2)^9', fontsize=14)
+# ax.plot(n_array,error[:,0], label='polynomial')
+# ax.plot(n_array,error[:,1], label='hermite')
 ax.plot(n_array,error[:,2], label='natural cubic splines')
 plt.legend()
 plt.tight_layout()
 
 
-
-
-
+#%%
 f2_fine = func2(f_mesh)
-n_array = np.arange(2,50)
+n_array = np.arange(2,40)
 
 error = np.zeros((len(n_array),3))
 for i in range(len(n_array)):
     x_nodes = np.linspace(a,b,n_array[i])
     y_nodes = func2(x_nodes)
+    mono_f2 = np.array([monomial(x,x_nodes,y_nodes) for x in f_mesh])
+    
+    f2_prime = np.array([-2*x/((1+x**2)**2) for x in x_nodes])
+    α = hermite_divided_diff(x_nodes,y_nodes,f2_prime)
+    herm_f2 = np.array([hermite(x,α,x_nodes) for x in f_mesh])
+    
+    M = compute_M(x_nodes,y_nodes)
+    cub_f2 = [cubic_interp(x,x_nodes,y_nodes,M) for x in f_mesh]
+    
+    error[i][0] = max(abs(f2_fine-mono_f2))
+    # error[i][1] = max(abs(f2_fine-herm_f2))
+    error[i][2] = max(abs(f2_fine-cub_f2))
+    
+fig2, ax2 = plt.subplots()
+fig2.suptitle('Number of Interpolation Nodes vs Interpolation Error\nf(x) = 1/(1 + x^2)', fontsize=14)
+ax2.plot(n_array,error[:,0], label='polynomial')
+ax2.plot(n_array,error[:,1], label='hermite')
+ax2.plot(n_array,error[:,2], label='natural cubic splines')
+plt.legend()
+plt.tight_layout()
+
+#%%
+f_mesh = np.linspace(a,b,101)
+f1_fine = func1(f_mesh)
+n_array = np.arange(10,50)
+
+error = np.zeros((len(n_array),3))
+for i in range(len(n_array)):
+    x_nodes = np.linspace(a,b,n_array[i])
+    y_nodes = func1(x_nodes)
     mono_f1 = np.array([monomial(x,x_nodes,y_nodes) for x in f_mesh])
-    
-    # bary = barycentric_lagrange(x_nodes,y_nodes,'equal')
-    # lag_f1 = np.array([bary(x) for x in f_mesh])
-    
-    # α = divided_diff(x_nodes,y_nodes)
-    # newt_f1 = np.array([horner(x,α,x_nodes) for x in f_mesh])
     
     f1_prime = np.array([9*(x-2)**8 for x in x_nodes])
     α = hermite_divided_diff(x_nodes,y_nodes,f1_prime)
@@ -270,15 +287,42 @@ for i in range(len(n_array)):
     error[i][2] = max(abs(f1_fine-cub_f1))
     
 fig, ax = plt.subplots()
-fig.suptitle('Number of Interpolation Nodes vs Interpolation Error', fontsize=14)
-ax.plot(n_array,error[:,0], label='polynomial')
-ax.plot(n_array,error[:,1], label='hermite')
+fig.suptitle('Number of Interpolation Nodes vs Interpolation Error\nf(x) = (x-2)^9', fontsize=14)
+# ax.plot(n_array,error[:,0], label='polynomial')
+# ax.plot(n_array,error[:,1], label='hermite')
 ax.plot(n_array,error[:,2], label='natural cubic splines')
 plt.legend()
 plt.tight_layout()
+
+
+#%%
+f2_fine = func2(f_mesh)
+n_array = np.arange(2,40)
+
+error = np.zeros((len(n_array),3))
+for i in range(len(n_array)):
+    x_nodes = np.linspace(a,b,n_array[i])
+    y_nodes = func2(x_nodes)
+    mono_f2 = np.array([monomial(x,x_nodes,y_nodes) for x in f_mesh])
     
+    f2_prime = np.array([-2*x/((1+x**2)**2) for x in x_nodes])
+    α = hermite_divided_diff(x_nodes,y_nodes,f2_prime)
+    herm_f2 = np.array([hermite(x,α,x_nodes) for x in f_mesh])
     
+    M = compute_M(x_nodes,y_nodes)
+    cub_f2 = [cubic_interp(x,x_nodes,y_nodes,M) for x in f_mesh]
     
+    error[i][0] = max(abs(f2_fine-mono_f2))
+    # error[i][1] = max(abs(f2_fine-herm_f2))
+    error[i][2] = max(abs(f2_fine-cub_f2))
+    
+fig2, ax2 = plt.subplots()
+fig2.suptitle('Number of Interpolation Nodes vs Interpolation Error\nf(x) = 1/(1 + x^2)', fontsize=14)
+ax2.plot(n_array,error[:,0], label='polynomial')
+ax2.plot(n_array,error[:,1], label='hermite')
+ax2.plot(n_array,error[:,2], label='natural cubic splines')
+plt.legend()
+plt.tight_layout()
 
 #%%
 
@@ -408,10 +452,10 @@ ax4.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.search
 newt_f2 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
 ax4.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
 
-# f2_prime = np.array([9*(x-2)**8 for x in eq_mesh])
-# α = hermite_divided_diff(eq_mesh,f2,f2_prime)
-# herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
-# ax4.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+f2_prime = np.array([-2*x/((1+x**2)**2) for x in eq_mesh])
+α = hermite_divided_diff(eq_mesh,f2,f2_prime)
+herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+ax4.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
 
 M = compute_M(eq_mesh,f2)
 cub_f2 = [cubic_interp(x,eq_mesh,f2,M) for x in f_mesh]
@@ -439,10 +483,10 @@ ax5.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.search
 newt_f2 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
 ax5.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
 
-# f2_prime = np.array([9*(x-2)**8 for x in eq_mesh])
-# α = hermite_divided_diff(eq_mesh,f2,f2_prime)
-# herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
-# ax5.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+f2_prime = np.array([-2*x/((1+x**2)**2) for x in eq_mesh])
+α = hermite_divided_diff(eq_mesh,f2,f2_prime)
+herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+ax5.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
 
 M = compute_M(eq_mesh,f2)
 cub_f2 = [cubic_interp(x,eq_mesh,f2,M) for x in f_mesh]
@@ -470,10 +514,10 @@ ax6.plot(f_mesh, lag_f2, '-D', label='barycentric lagrange', markevery=np.search
 newt_f2 = np.array([horner(x,α,eq_mesh) for x in f_mesh])
 ax6.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh,eq_mesh))
 
-# f2_prime = np.array([9*(x-2)**8 for x in eq_mesh])
-# α = hermite_divided_diff(eq_mesh,f2,f2_prime)
-# herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
-# ax6.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
+f2_prime = np.array([-2*x/((1+x**2)**2) for x in eq_mesh])
+α = hermite_divided_diff(eq_mesh,f2,f2_prime)
+herm_f2 = np.array([hermite(x,α,eq_mesh) for x in f_mesh])
+ax6.plot(f_mesh, herm_f2, '-D', label='hermite', markevery=np.searchsorted(f_mesh,eq_mesh))
 
 M = compute_M(eq_mesh,f2)
 cub_f2 = [cubic_interp(x,eq_mesh,f2,M) for x in f_mesh]
@@ -641,7 +685,4 @@ ax6.plot(f_mesh, newt_f2, '-D', label='newton', markevery=np.searchsorted(f_mesh
 ax6.legend()
 
 plt.tight_layout()
-
- #%%
-
 
