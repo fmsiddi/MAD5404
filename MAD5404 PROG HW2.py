@@ -52,7 +52,7 @@ def task1(func, tol, method, a, b, sol, fine):
         m += 1
         error = abs(method(func, a, b, m, sol, fine))
     H_m = (b-a)/m
-    return error, H_m
+    return error, H_m, m
 
 # func 1:
 func = lambda x: np.exp(np.sin(2*x)) * np.cos(2*x)
@@ -60,18 +60,39 @@ sol = (np.exp(np.sqrt(3)/2) - 1)/2
 a = 0
 b = np.pi/3
 
-func1 = np.zeros((3,2))
+func1 = np.zeros((3,2,3))
 
 for method in range(3):
     if method == 0:
-        func1[method][0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)[1]
-        func1[method][1] = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)
+        func1[method][0][0] = quad[0]
+        func1[method][0][1] = quad[1]
+        func1[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)
+        func1[method][1][0] = quad[0]
+        func1[method][1][1] = quad[1]
+        func1[method][1][2] = quad[2]
     if method == 1:
-        func1[method][0] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)[1]
-        func1[method][1] = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)
+        func1[method][0][0] = quad[0]
+        func1[method][0][1] = quad[1]
+        func1[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)
+        func1[method][1][0] = quad[0]
+        func1[method][1][1] = quad[1]
+        func1[method][1][2] = quad[2]
     if method == 2:
-        func1[method][0] = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)[1]
-        func1[method][1] = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)
+        func1[method][0][0] = quad[0]
+        func1[method][0][1] = quad[1]
+        func1[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)
+        func1[method][1][0] = quad[0]
+        func1[method][1][1] = quad[1]
+        func1[method][1][2] = quad[2]
         
 # func 2:
 func = lambda x: x * np.cos(2*np.pi*x)
@@ -79,18 +100,39 @@ sol = -1/(2 * np.pi**2)
 a = 0
 b = 3.5
 
-func2 = np.zeros((3,2))
+func2 = np.zeros((3,2,3))
 
 for method in range(3):
     if method == 0:
-        func2[method][0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)[1]
-        func2[method][1] = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)
+        func2[method][0][0] = quad[0]
+        func2[method][0][1] = quad[1]
+        func2[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)
+        func2[method][1][0] = quad[0]
+        func2[method][1][1] = quad[1]
+        func2[method][1][2] = quad[2]
     if method == 1:
-        func2[method][0] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)[1]
-        func2[method][1] = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)
+        func2[method][0][0] = quad[0]
+        func2[method][0][1] = quad[1]
+        func2[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)
+        func2[method][1][0] = quad[0]
+        func2[method][1][1] = quad[1]
+        func2[method][1][2] = quad[2]
     if method == 2:
-        func2[method][0] = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)[1]
-        func2[method][1] = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)
+        func2[method][0][0] = quad[0]
+        func2[method][0][1] = quad[1]
+        func2[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)
+        func2[method][1][0] = quad[0]
+        func2[method][1][1] = quad[1]
+        func2[method][1][2] = quad[2]
         
 # func 3:
 func = lambda x: x + 1/x
@@ -98,15 +140,36 @@ sol = (2.5**2 - .1**2)/2 + np.log(2.5/.1)
 a = 0.1
 b = 2.5
 
-func3 = np.zeros((3,2))
+func3 = np.zeros((3,2,3))
 
 for method in range(3):
     if method == 0:
-        func3[method][0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)[1]
-        func3[method][1] = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)
+        func3[method][0][0] = quad[0]
+        func3[method][0][1] = quad[1]
+        func3[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)
+        func3[method][1][0] = quad[0]
+        func3[method][1][1] = quad[1]
+        func3[method][1][2] = quad[2]
     if method == 1:
-        func3[method][0] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)[1]
-        func3[method][1] = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)
+        func3[method][0][0] = quad[0]
+        func3[method][0][1] = quad[1]
+        func3[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)
+        func3[method][1][0] = quad[0]
+        func3[method][1][1] = quad[1]
+        func3[method][1][2] = quad[2]
     if method == 2:
-        func3[method][0] = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)[1]
-        func3[method][1] = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)[1]
+        quad = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)
+        func3[method][0][0] = quad[0]
+        func3[method][0][1] = quad[1]
+        func3[method][0][2] = quad[2]
+        
+        quad = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)
+        func3[method][1][0] = quad[0]
+        func3[method][1][1] = quad[1]
+        func3[method][1][2] = quad[2]
