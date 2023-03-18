@@ -3,9 +3,6 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 plt.style.use('seaborn')
 
-func1 = lambda x: np.exp(np.sin(2*x)) * np.cos(2*x)
-func2 = lambda x: x * np.cos(2*np.pi*x)
-func3 = lambda x: x + 1/x
 
 def comp_trapezoidal_error(func, a, b, m, sol, fine):
     H_m = (b-a)/m
@@ -36,7 +33,7 @@ def comp_midpoint_error(func, a, b, m, sol, fine):
         error = sol - I_m
     return error
 
-def comp_simpsons_error(func, a, b, m, sol):
+def comp_simpsons_error(func, a, b, m, sol, fine=False):
     H_m = (b-a)/m
     h_sf = H_m/2
     prelim_points = np.linspace(a,b,m+1)
@@ -44,3 +41,72 @@ def comp_simpsons_error(func, a, b, m, sol):
     b_i = prelim_points[1:-1]
     I_m = H_m * (func(a) + func(b) + 2*np.sum(func(b_i)) + 4*np.sum(func(c_i)))/6
     return sol - I_m
+#%%
+
+# Composite methods, Task 1
+
+def task1(func, tol, method, a, b, sol, fine):
+    m = 0
+    error = 1
+    while error > tol:
+        m += 1
+        error = abs(method(func, a, b, m, sol, fine))
+    H_m = (b-a)/m
+    return error, H_m
+
+# func 1:
+func = lambda x: np.exp(np.sin(2*x)) * np.cos(2*x)
+sol = (np.exp(np.sqrt(3)/2) - 1)/2
+a = 0
+b = np.pi/3
+
+func1 = np.zeros((3,2))
+
+for method in range(3):
+    if method == 0:
+        func1[method][0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+        func1[method][1] = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+    if method == 1:
+        func1[method][0] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)[1]
+        func1[method][1] = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)[1]
+    if method == 2:
+        func1[method][0] = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)[1]
+        func1[method][1] = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)[1]
+        
+# func 2:
+func = lambda x: x * np.cos(2*np.pi*x)
+sol = -1/(2 * np.pi**2)
+a = 0
+b = 3.5
+
+func2 = np.zeros((3,2))
+
+for method in range(3):
+    if method == 0:
+        func2[method][0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+        func2[method][1] = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+    if method == 1:
+        func2[method][0] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)[1]
+        func2[method][1] = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)[1]
+    if method == 2:
+        func2[method][0] = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)[1]
+        func2[method][1] = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)[1]
+        
+# func 3:
+func = lambda x: x + 1/x
+sol = (2.5**2 - .1**2)/2 + np.log(2.5/.1)
+a = 0.1
+b = 2.5
+
+func3 = np.zeros((3,2))
+
+for method in range(3):
+    if method == 0:
+        func3[method][0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+        func3[method][1] = task1(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)[1]
+    if method == 1:
+        func3[method][0] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=False)[1]
+        func3[method][1] = task1(func, .0001, comp_midpoint_error, a, b, sol, fine=False)[1]
+    if method == 2:
+        func3[method][0] = task1(func, .01, comp_simpsons_error, a, b, sol, fine=False)[1]
+        func3[method][1] = task1(func, .0001, comp_simpsons_error, a, b, sol, fine=False)[1]
