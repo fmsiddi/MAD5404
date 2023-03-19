@@ -31,9 +31,9 @@ def comp_midpoint_error(func, a, b, m, sol, fine):
     midpoints_eval = func(midpoints)
     I_m = H_m * np.sum(midpoints_eval)
     if fine == True:
-        Hdiv6 = H_m/6 # precomputed to save on computational time in the loop below
-        H5div6 = 5*Hdiv6 # precomputed to save on computational time in the loop below
-        I_3m = (I_m + H_m * np.sum([func(a + i*H_m + Hdiv6) + func(a + i*H_m + H5div6) for i in np.arange(m)]))
+        new_points1 = np.array([a + i*H_m + H_m/6 for i in range(m)])
+        new_points2 = np.array([a + i*H_m + 5*H_m/6 for i in range(m)])
+        I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))
         approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
         true_error = sol - I_3m
         return approx_error, true_error
