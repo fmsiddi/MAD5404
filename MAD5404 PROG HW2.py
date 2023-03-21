@@ -33,7 +33,7 @@ def comp_midpoint_error(func, a, b, m, sol, fine):
     if fine == True:
         new_points1 = np.array([a + i*H_m + H_m/6 for i in range(m)])
         new_points2 = np.array([a + i*H_m + 5*H_m/6 for i in range(m)])
-        I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))
+        I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))/3
         approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
         true_error = sol - I_3m
         return approx_error, true_error
@@ -236,4 +236,23 @@ func3_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
 func3_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
         
 #%%
+
+func = lambda x: x**2 
+sol = (12**3)/3
+
+a = 0
+b = 12
+m = 2
+
+H_m = (b-a)/m
+prelim_points = np.linspace(a,b,m+1)
+midpoints = np.linspace((prelim_points[0] + prelim_points[1])/2, (prelim_points[-2] + prelim_points[-1])/2, m)
+midpoints_eval = func(midpoints)
+I_m = H_m * np.sum(midpoints_eval)
+
+new_points1 = np.array([a + i*H_m + H_m/6 for i in range(m)])
+new_points2 = np.array([a + i*H_m + 5*H_m/6 for i in range(m)])
+I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))/3
+approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
+true_error = sol - I_3m
 
