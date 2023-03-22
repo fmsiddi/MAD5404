@@ -66,7 +66,13 @@ def task1(func, tol, method, a, b, sol, fine):
             m += 1
             error = abs(method(func, a, b, m, sol, fine))
         H_m = (b-a)/m
-        return error, H_m, m
+        if method == comp_trapezoidal_error:
+            num_evals = m + 1
+        if method == comp_midpoint_error:
+            num_evals = m
+        else:
+            num_evals = 2*m + 1
+        return error, H_m, num_evals
     else:
         error_comparison = np.zeros((10,6))
         if method == comp_trapezoidal_error:
@@ -267,7 +273,7 @@ for attribute, measurement in m_01.items():
     rects = ax.bar(x + offset, measurement, width, label=attribute)
     ax.bar_label(rects, padding=3)
     multiplier += 1
-ax.set_ylabel('m')
+ax.set_ylabel('Number of evals')
 ax.set_title('Number of Function Evaluations for Tolerance = .01')
 ax.set_xticks(x + width)
 ax.set_xticklabels(functions)
@@ -337,7 +343,7 @@ for attribute, measurement in m_0001.items():
     rects = ax.bar(x + offset, measurement, width, label=attribute)
     ax.bar_label(rects, padding=3)
     multiplier += 1
-ax.set_ylabel('m')
+ax.set_ylabel('Number of evals')
 ax.set_title('Number of Function Evaluations for Tolerance = .0001')
 ax.set_xticks(x + width)
 ax.set_xticklabels(functions)
