@@ -493,7 +493,13 @@ def task2(func, tol, method, a, b, sol, fine):
             m += 1
             error = abs(method(func, a, b, m, sol, fine))
         H_m = (b-a)/m
-        return error, H_m, m
+        if method == comp_trapezoidal_error:
+            num_evals = m + 1
+        if method == comp_midpoint_error:
+            num_evals = m
+        else:
+            num_evals = 2*m + 1
+        return error, H_m, num_evals
     else:
         error_comparison = np.zeros((10,5))
         if method == comp_trapezoidal_error:
@@ -593,7 +599,7 @@ m_01 = {
 
 fig, ax = plt.subplots()
 ax.bar(m_01.keys(),m_01.values(),color=sns.color_palette())
-ax.set_ylabel('m')
+ax.set_ylabel('Number of evals')
 ax.set_title('Function Evaluations for Function 4 for Tolerance = .01')
 plt.tight_layout()
 
@@ -633,7 +639,7 @@ m_0001 = {
 
 fig, ax = plt.subplots()
 ax.bar(m_0001.keys(),m_0001.values(),color=sns.color_palette())
-ax.set_ylabel('m')
+ax.set_ylabel('Number of evals')
 ax.set_title('Function Evaluations for Function 4 for Tolerance = .0001')
 plt.tight_layout()
         
