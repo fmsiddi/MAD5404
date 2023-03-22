@@ -68,7 +68,7 @@ def task1(func, tol, method, a, b, sol, fine):
         H_m = (b-a)/m
         return error, H_m, m
     else:
-        error_comparison = np.zeros((10,3))
+        error_comparison = np.zeros((10,6))
         if method == comp_trapezoidal_error:
             m_array = np.array([2**k for k in range(1,11)])
         elif method == comp_midpoint_error:
@@ -76,9 +76,12 @@ def task1(func, tol, method, a, b, sol, fine):
         # m_array = np.arange(1,11)
         for i in range(len(m_array)):
             errors = method(func, a, b, m_array[i], sol, fine)
-            error_comparison[i][0] = abs(errors[0]) # approximate error
-            error_comparison[i][1] = abs(errors[1]) # true error
-            error_comparison[i][2] = errors[2] # r
+            error_comparison[i][0] = int(i+1) # k
+            error_comparison[i][1] = int(m_array[i]) # 2,3**k
+            error_comparison[i][2] = round(errors[1] + sol,6) # I_2,3m
+            error_comparison[i][3] = round(abs(errors[0]),6) # approximate error
+            error_comparison[i][4] = round(abs(errors[1]),6) # true error
+            error_comparison[i][5] = round(errors[2],6) # r
         return error_comparison
 #%%
 # Part 1 of Task 1
@@ -354,22 +357,69 @@ sol = (np.exp(np.sqrt(3)/2) - 1)/2
 a = 0
 b = np.pi/3
 
-func1_fine = np.zeros((2,10,3))
+func1_fine = np.zeros((2,10,6))
 
 func1_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
+columns = ('k', '2**k', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+ax.table(cellText=func1_fine[0],colLabels=columns,loc='upper center')
+ax.set_title('Composite Trapezoidal with GUSSR for Function 1')
+plt.tight_layout()
+
+
 func1_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
-    
-        
+columns = ('k', '3**k', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+ax.table(cellText=func1_fine[1],colLabels=columns,loc='upper center')
+ax.set_title('Composite Midpoint with GUSSR for Function 1')
+plt.tight_layout()
+
+
 # func 2:
 func = lambda x: x * np.cos(2*np.pi*x)
 sol = -1/(2 * np.pi**2)
 a = 0
 b = 3.5
 
-func2_fine = np.zeros((2,10,3))
+func2_fine = np.zeros((2,10,6))
 
 func2_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
+columns = ('k', '2**k', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+ax.table(cellText=func2_fine[0],colLabels=columns,loc='upper center')
+ax.set_title('Composite Trapezoidal with GUSSR for Function 2')
+plt.tight_layout()
+
 func2_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
+columns = ('k', '3**k', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center')
+ax.set_title('Composite Midpoint with GUSSR for Function 2')
+plt.tight_layout()
         
 
 # func 3:
@@ -378,10 +428,33 @@ sol = (2.5**2 - .1**2)/2 + np.log(2.5/.1)
 a = 0.1
 b = 2.5
 
-func3_fine = np.zeros((2,10,3))
+func3_fine = np.zeros((2,10,6))
 
 func3_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
+columns = ('k', '2**k', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+ax.table(cellText=func3_fine[0],colLabels=columns,loc='upper center')
+ax.set_title('Composite Trapezoidal with GUSSR for Function 3')
+plt.tight_layout()
+
 func3_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
+columns = ('k', '3**k', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center')
+ax.set_title('Composite Midpoint with GUSSR for Function 3')
+plt.tight_layout()
         
 #%%
 
