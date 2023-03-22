@@ -74,7 +74,7 @@ def task1(func, tol, method, a, b, sol, fine):
             num_evals = 2*m + 1
         return error, H_m, num_evals
     else:
-        error_comparison = np.zeros((10,6))
+        error_comparison = np.zeros((10,7))
         if method == comp_trapezoidal_error:
             m_array = np.array([2**k for k in range(1,11)])
         elif method == comp_midpoint_error:
@@ -82,12 +82,17 @@ def task1(func, tol, method, a, b, sol, fine):
         # m_array = np.arange(1,11)
         for i in range(len(m_array)):
             errors = method(func, a, b, m_array[i], sol, fine)
+            if method == comp_trapezoidal_error:
+                num_evals = 2*m_array[i] + 1
+            if method == comp_midpoint_error:
+                num_evals = 3*m_array[i]
             error_comparison[i][0] = int(i+1) # k
             error_comparison[i][1] = int(m_array[i]) # 2,3**k
-            error_comparison[i][2] = round(errors[1] + sol,6) # I_2,3m
-            error_comparison[i][3] = round(abs(errors[0]),6) # approximate error
-            error_comparison[i][4] = round(abs(errors[1]),6) # true error
-            error_comparison[i][5] = round(errors[2],6) # r
+            error_comparison[i][2] = int(num_evals)
+            error_comparison[i][3] = round(errors[1] + sol,6) # I_2,3m
+            error_comparison[i][4] = round(abs(errors[0]),6) # approximate error
+            error_comparison[i][5] = round(abs(errors[1]),6) # true error
+            error_comparison[i][6] = round(errors[2],6) # r
         return error_comparison
 #%%
 # Part 1 of Task 1
@@ -363,10 +368,10 @@ sol = (np.exp(np.sqrt(3)/2) - 1)/2
 a = 0
 b = np.pi/3
 
-func1_fine = np.zeros((2,10,6))
+func1_fine = np.zeros((2,10,7))
 
 func1_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
-columns = ('k', '2**k', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
+columns = ('k', '2**k', 'Number of function evals', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
 fig, ax = plt.subplots()
 
 # hide axes
@@ -380,7 +385,7 @@ plt.tight_layout()
 
 
 func1_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
-columns = ('k', '3**k', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
+columns = ('k', '3**k', 'Number of function evals', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
 fig, ax = plt.subplots()
 
 # hide axes
@@ -399,10 +404,10 @@ sol = -1/(2 * np.pi**2)
 a = 0
 b = 3.5
 
-func2_fine = np.zeros((2,10,6))
+func2_fine = np.zeros((2,10,7))
 
 func2_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
-columns = ('k', '2**k', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
+columns = ('k', '2**k', 'Number of function evals', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
 fig, ax = plt.subplots()
 
 # hide axes
@@ -415,7 +420,7 @@ ax.set_title('Composite Trapezoidal with GUSSR for Function 2')
 plt.tight_layout()
 
 func2_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
-columns = ('k', '3**k', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
+columns = ('k', '3**k', 'Number of function evals', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
 fig, ax = plt.subplots()
 
 # hide axes
@@ -434,10 +439,10 @@ sol = (2.5**2 - .1**2)/2 + np.log(2.5/.1)
 a = 0.1
 b = 2.5
 
-func3_fine = np.zeros((2,10,6))
+func3_fine = np.zeros((2,10,7))
 
 func3_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
-columns = ('k', '2**k', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
+columns = ('k', '2**k', 'Number of function evals', 'I_2m', 'Approx. Error', 'Exact Error', 'Computed r')
 fig, ax = plt.subplots()
 
 # hide axes
@@ -450,7 +455,7 @@ ax.set_title('Composite Trapezoidal with GUSSR for Function 3')
 plt.tight_layout()
 
 func3_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
-columns = ('k', '3**k', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
+columns = ('k', '3**k', 'Number of function evals', 'I_3m', 'Approx. Error', 'Exact Error', 'Computed r')
 fig, ax = plt.subplots()
 
 # hide axes
@@ -462,27 +467,6 @@ ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center')
 ax.set_title('Composite Midpoint with GUSSR for Function 3')
 plt.tight_layout()
         
-#%%
-
-# func = lambda x: x * np.cos(2*np.pi*x)
-# sol = -1/(2 * np.pi**2)
-# a = 0
-# b = 3.5
-
-# m = 2
-
-# H_m = (b-a)/m
-# prelim_points = np.linspace(a,b,m+1)
-# midpoints = np.linspace((prelim_points[0] + prelim_points[1])/2, (prelim_points[-2] + prelim_points[-1])/2, m)
-# midpoints_eval = func(midpoints)
-# I_m = H_m * np.sum(midpoints_eval)
-
-# new_points1 = np.array([a + i*H_m + H_m/6 for i in range(m)])
-# new_points2 = np.array([a + i*H_m + 5*H_m/6 for i in range(m)])
-# I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))/3
-# approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
-# true_error = sol - I_3m
-# r = log3(abs((I_3m - I_m)/(sol - I_3m)) + 1)
 #%%
 # Task 2
 def task2(func, tol, method, a, b, sol, fine):
@@ -501,7 +485,7 @@ def task2(func, tol, method, a, b, sol, fine):
             num_evals = 2*m + 1
         return error, H_m, num_evals
     else:
-        error_comparison = np.zeros((10,5))
+        error_comparison = np.zeros((10,9))
         if method == comp_trapezoidal_error:
             m_array = np.array([2**k for k in range(1,11)])
         elif method == comp_midpoint_error:
@@ -511,16 +495,22 @@ def task2(func, tol, method, a, b, sol, fine):
             errors = method(func, a, b, m_array[i], sol, fine)
             H_m = (b-a)/m_array[i]
             if method == comp_trapezoidal_error:
+                num_evals = 2*m_array[i] + 1
                 low_err_bound = (b-a)*(H_m**2)*func(a)/12 # since all derivatives of e^x is itself, we just reuse the function
                 upp_err_bound = (b-a)*(H_m**2)*func(b)/12 # since all derivatives of e^x is itself, we just reuse the function
             elif method == comp_midpoint_error:
+                num_evals = 3*m_array[i]
                 low_err_bound = (b-a)*(H_m**2)*func(a)/24 # since all derivatives of e^x is itself, we just reuse the function
                 upp_err_bound = (b-a)*(H_m**2)*func(b)/24 # since all derivatives of e^x is itself, we just reuse the function
-            error_comparison[i][0] = abs(errors[0]) # approximate error
-            error_comparison[i][1] = abs(errors[1]) # true error
-            error_comparison[i][2] = low_err_bound # lower error bound
-            error_comparison[i][3] = upp_err_bound # upper error bound
-            error_comparison[i][4] = errors[2] # r
+            error_comparison[i][0] = int(i+1) # k
+            error_comparison[i][1] = int(m_array[i]) # 2,3**k
+            error_comparison[i][2] = int(num_evals)
+            error_comparison[i][3] = round(errors[1] + sol,6) # I_2,3m
+            error_comparison[i][4] = round(abs(errors[0]),6) # approximate error
+            error_comparison[i][5] = round(abs(errors[1]),6) # true error
+            error_comparison[i][6] = round(low_err_bound,6) # lower error bound
+            error_comparison[i][7] = round(upp_err_bound,6) # upper error bound
+            error_comparison[i][8] = round(errors[2],6) # r
         return error_comparison
 
 #%%
@@ -645,7 +635,33 @@ plt.tight_layout()
         
 #%%
 
-func4_fine = np.zeros((2,10,5))
+func4_fine = np.zeros((2,10,9))
 
 func4_fine[0] = task2(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
+columns = ('k', '2**k', 'Number of function evals', 'I_2m', 'Approx. Error', 'Exact Error', 'Lower Bound for Error', 'Upper Bound for Error', 'Computed r')
+fig, ax = plt.subplots(figsize=[15, 9])
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+tbl = ax.table(cellText=func4_fine[0],colLabels=columns,loc='upper center')
+tbl.set_fontsize(30)
+ax.set_title('Composite Trapezoidal with GUSSR for Function 4')
+plt.tight_layout()
+
+#%%
 func4_fine[1] = task2(func, .01, comp_midpoint_error, a, b, sol, fine=True)
+columns = ('k', '3**k', 'Number of function evals', 'I_3m', 'Approx. Error', 'Exact Error', 'Lower Bound for Error', 'Upper Bound for Error', 'Computed r')
+fig, ax = plt.subplots()
+
+# hide axes
+fig.patch.set_visible(False)
+ax.axis('off')
+ax.axis('tight')
+
+tbl = ax.table(cellText=func4_fine[1],colLabels=columns,loc='upper center')
+tbl.set_fontsize(30)
+ax.set_title('Composite Midpoint with GUSSR for Function 4')
+plt.tight_layout()
