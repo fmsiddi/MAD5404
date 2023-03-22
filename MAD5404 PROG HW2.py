@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 plt.style.use('seaborn')
+import seaborn as sns
 
 
 def comp_trapezoidal_error(func, a, b, m, sol, fine):
@@ -201,6 +202,148 @@ for method in range(3):
         func3[method][1][0] = quad[0]
         func3[method][1][1] = quad[1]
         func3[method][1][2] = quad[2]
+        
+functions = ('Function 1','Function 2','Function 3')        
+
+error_01 = {
+    'CTR': (func1[0][0][0], func2[0][0][0], func3[0][0][0]),
+    'CMR': (func1[1][0][0], func2[1][0][0], func3[1][0][0]),
+    'CSR': (func1[2][0][0], func2[2][0][0], func3[2][0][0])
+    }
+
+fig, ax = plt.subplots()
+x = np.arange(len(functions))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
+for attribute, measurement in error_01.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
+ax.set_ylabel('Error')
+ax.set_title('Error for Tolerance = .01')
+ax.set_xticks(x + width)
+ax.set_xticklabels(functions)
+plt.legend()
+plt.tight_layout()
+
+H_01 = {
+    'CTR': (func1[0][0][1], func2[0][0][1], func3[0][0][1]),
+    'CMR': (func1[1][0][1], func2[1][0][1], func3[1][0][1]),
+    'CSR': (func1[2][0][1], func2[2][0][1], func3[2][0][1])
+    }
+
+fig, ax = plt.subplots()
+x = np.arange(len(functions))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
+for attribute, measurement in H_01.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
+ax.set_ylabel('H_m')
+ax.set_title('Subinterval Size for Tolerance = .01')
+ax.set_xticks(x + width)
+ax.set_xticklabels(functions)
+plt.legend()
+plt.tight_layout()
+
+m_01 = {
+    'CTR': (func1[0][0][2], func2[0][0][2], func3[0][0][2]),
+    'CMR': (func1[1][0][2], func2[1][0][2], func3[1][0][2]),
+    'CSR': (func1[2][0][2], func2[2][0][2], func3[2][0][2])
+    }
+
+fig, ax = plt.subplots()
+x = np.arange(len(functions))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
+for attribute, measurement in m_01.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
+ax.set_ylabel('m')
+ax.set_title('Number of Function Evaluations for Tolerance = .01')
+ax.set_xticks(x + width)
+ax.set_xticklabels(functions)
+plt.legend()
+plt.tight_layout()
+
+
+
+
+
+error_0001 = {
+    'CTR': (func1[0][1][0], func2[0][1][0], func3[0][1][0]),
+    'CMR': (func1[1][1][0], func2[1][1][0], func3[1][1][0]),
+    'CSR': (func1[2][1][0], func2[2][1][0], func3[2][1][0])
+    }
+
+fig, ax = plt.subplots()
+x = np.arange(len(functions))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
+for attribute, measurement in error_0001.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
+ax.set_ylabel('Error')
+ax.set_title('Error for Tolerance = .0001')
+ax.set_xticks(x + width)
+ax.set_xticklabels(functions)
+plt.legend()
+plt.tight_layout()
+
+H_0001 = {
+    'CTR': (func1[0][1][1], func2[0][1][1], func3[0][1][1]),
+    'CMR': (func1[1][1][1], func2[1][1][1], func3[1][1][1]),
+    'CSR': (func1[2][1][1], func2[2][1][1], func3[2][1][1])
+    }
+
+fig, ax = plt.subplots()
+x = np.arange(len(functions))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
+for attribute, measurement in H_0001.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
+ax.set_ylabel('H_m')
+ax.set_title('Subinterval Size for Tolerance = .0001')
+ax.set_xticks(x + width)
+ax.set_xticklabels(functions)
+plt.legend()
+plt.tight_layout()
+
+m_0001 = {
+    'CTR': (func1[0][1][2], func2[0][1][2], func3[0][1][2]),
+    'CMR': (func1[1][1][2], func2[1][1][2], func3[1][1][2]),
+    'CSR': (func1[2][1][2], func2[2][1][2], func3[2][1][2])
+    }
+
+fig, ax = plt.subplots()
+x = np.arange(len(functions))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
+for attribute, measurement in m_0001.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
+ax.set_ylabel('m')
+ax.set_title('Number of Function Evaluations for Tolerance = .0001')
+ax.set_xticks(x + width)
+ax.set_xticklabels(functions)
+plt.legend()
+plt.tight_layout()
+
+
+
+        
 #%%
 
 # Part 2 of Task 1
@@ -335,6 +478,85 @@ for method in range(3):
         func4[method][1][0] = quad[0]
         func4[method][1][1] = quad[1]
         func4[method][1][2] = quad[2]
+        
+functions = ('Function 4')        
+
+error_01 = {
+    'CTR': (func4[0][0][0]),
+    'CMR': (func4[1][0][0]),
+    'CSR': (func4[2][0][0])
+    }
+
+
+fig, ax = plt.subplots()
+ax.bar(error_01.keys(),error_01.values(),color=sns.color_palette())
+ax.set_ylabel('Error')
+ax.set_title('Error for Function 4 for Tolerance = .01')
+plt.tight_layout()
+
+H_01 = {
+    'CTR': (func4[0][0][1]),
+    'CMR': (func4[1][0][1]),
+    'CSR': (func4[2][0][1])
+    }
+
+fig, ax = plt.subplots()
+ax.bar(H_01.keys(),H_01.values(),color=sns.color_palette())
+ax.set_ylabel('H_m')
+ax.set_title('Subinterval Size for Function 4 for Tolerance = .01')
+plt.tight_layout()
+
+m_01 = {
+    'CTR': (func4[0][0][2]),
+    'CMR': (func4[1][0][2]),
+    'CSR': (func4[2][0][2])
+    }
+
+fig, ax = plt.subplots()
+ax.bar(m_01.keys(),m_01.values(),color=sns.color_palette())
+ax.set_ylabel('m')
+ax.set_title('Function Evaluations for Function 4 for Tolerance = .01')
+plt.tight_layout()
+
+
+
+
+
+error_0001 = {
+    'CTR': (func4[0][1][0]),
+    'CMR': (func4[1][1][0]),
+    'CSR': (func4[2][1][0])
+    }
+
+fig, ax = plt.subplots()
+ax.bar(error_0001.keys(),error_0001.values(),color=sns.color_palette())
+ax.set_ylabel('Error')
+ax.set_title('Error for Function 4 for Tolerance = .0001')
+plt.tight_layout()
+
+H_0001 = {
+    'CTR': (func4[0][1][1]),
+    'CMR': (func4[1][1][1]),
+    'CSR': (func4[2][1][1])
+    }
+
+fig, ax = plt.subplots()
+ax.bar(H_0001.keys(),H_0001.values(),color=sns.color_palette())
+ax.set_ylabel('H_m')
+ax.set_title('Subinterval Size for Function 4 for Tolerance = .0001')
+plt.tight_layout()
+
+m_0001 = {
+    'CTR': (func4[0][1][2]),
+    'CMR': (func4[1][1][2]),
+    'CSR': (func4[2][1][2])
+    }
+
+fig, ax = plt.subplots()
+ax.bar(m_0001.keys(),m_0001.values(),color=sns.color_palette())
+ax.set_ylabel('m')
+ax.set_title('Function Evaluations for Function 4 for Tolerance = .0001')
+plt.tight_layout()
         
 #%%
 
