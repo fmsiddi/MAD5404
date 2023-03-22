@@ -18,11 +18,14 @@ def comp_trapezoidal_error(func, a, b, m, sol, fine):
         I_2m = (I_m + H_m*np.sum(new_points_eval))/2
         approx_error = (I_2m - I_m)/3 # denominator is 2**r - 1
         true_error = sol - I_2m
-        return approx_error, true_error
+        r = np.log2(abs((I_2m - I_m)/(sol - I_2m)) + 1)
+        return approx_error, true_error, r
     else:
         error = sol - I_m
         return error
 
+def log3(x):
+    return np.log(x)/np.log(3)
     
 def comp_midpoint_error(func, a, b, m, sol, fine):
     H_m = (b-a)/m
@@ -36,7 +39,8 @@ def comp_midpoint_error(func, a, b, m, sol, fine):
         I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))/3
         approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
         true_error = sol - I_3m
-        return approx_error, true_error
+        r = log3(abs((I_3m - I_m)/(sol - I_3m)) + 1)
+        return approx_error, true_error, r
     else:
         error = sol - I_m
         return error
@@ -63,16 +67,17 @@ def task1(func, tol, method, a, b, sol, fine):
         H_m = (b-a)/m
         return error, H_m, m
     else:
-        error_comparison = np.zeros((10,2))
-        # if method == comp_trapezoidal_error:
-        #     m_array = np.array([2**k for k in range(1,11)])
-        # elif method == comp_midpoint_error:
-        #     m_array = np.array([3**k for k in range(1,11)])
-        m_array = np.arange(1,11)
+        error_comparison = np.zeros((10,3))
+        if method == comp_trapezoidal_error:
+            m_array = np.array([2**k for k in range(1,11)])
+        elif method == comp_midpoint_error:
+            m_array = np.array([3**k for k in range(1,11)])
+        # m_array = np.arange(1,11)
         for i in range(len(m_array)):
             errors = method(func, a, b, m_array[i], sol, fine)
             error_comparison[i][0] = abs(errors[0]) # approximate error
             error_comparison[i][1] = abs(errors[1]) # true error
+            error_comparison[i][2] = errors[2] # r
         return error_comparison
 #%%
 # Part 1 of Task 1
@@ -206,7 +211,7 @@ sol = (np.exp(np.sqrt(3)/2) - 1)/2
 a = 0
 b = np.pi/3
 
-func1_fine = np.zeros((2,10,2))
+func1_fine = np.zeros((2,10,3))
 
 func1_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
 func1_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
@@ -218,7 +223,7 @@ sol = -1/(2 * np.pi**2)
 a = 0
 b = 3.5
 
-func2_fine = np.zeros((2,10,2))
+func2_fine = np.zeros((2,10,3))
 
 func2_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
 func2_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
@@ -230,29 +235,110 @@ sol = (2.5**2 - .1**2)/2 + np.log(2.5/.1)
 a = 0.1
 b = 2.5
 
-func3_fine = np.zeros((2,10,2))
+func3_fine = np.zeros((2,10,3))
 
 func3_fine[0] = task1(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
 func3_fine[1] = task1(func, .01, comp_midpoint_error, a, b, sol, fine=True)
         
 #%%
 
-func = lambda x: x**2 
-sol = (12**3)/3
+# func = lambda x: x * np.cos(2*np.pi*x)
+# sol = -1/(2 * np.pi**2)
+# a = 0
+# b = 3.5
 
+# m = 2
+
+# H_m = (b-a)/m
+# prelim_points = np.linspace(a,b,m+1)
+# midpoints = np.linspace((prelim_points[0] + prelim_points[1])/2, (prelim_points[-2] + prelim_points[-1])/2, m)
+# midpoints_eval = func(midpoints)
+# I_m = H_m * np.sum(midpoints_eval)
+
+# new_points1 = np.array([a + i*H_m + H_m/6 for i in range(m)])
+# new_points2 = np.array([a + i*H_m + 5*H_m/6 for i in range(m)])
+# I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))/3
+# approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
+# true_error = sol - I_3m
+# r = log3(abs((I_3m - I_m)/(sol - I_3m)) + 1)
+#%%
+# Task 2
+def task2(func, tol, method, a, b, sol, fine):
+    error = 1
+    if fine == False:
+        m = 0
+        while error > tol:
+            m += 1
+            error = abs(method(func, a, b, m, sol, fine))
+        H_m = (b-a)/m
+        return error, H_m, m
+    else:
+        error_comparison = np.zeros((10,5))
+        if method == comp_trapezoidal_error:
+            m_array = np.array([2**k for k in range(1,11)])
+        elif method == comp_midpoint_error:
+            m_array = np.array([3**k for k in range(1,11)])
+        # m_array = np.arange(1,11)
+        for i in range(len(m_array)):
+            errors = method(func, a, b, m_array[i], sol, fine)
+            H_m = (b-a)/m_array[i]
+            if method == comp_trapezoidal_error:
+                low_err_bound = (b-a)*(H_m**2)*func(a)/12 # since all derivatives of e^x is itself, we just reuse the function
+                upp_err_bound = (b-a)*(H_m**2)*func(b)/12 # since all derivatives of e^x is itself, we just reuse the function
+            elif method == comp_midpoint_error:
+                low_err_bound = (b-a)*(H_m**2)*func(a)/24 # since all derivatives of e^x is itself, we just reuse the function
+                upp_err_bound = (b-a)*(H_m**2)*func(b)/24 # since all derivatives of e^x is itself, we just reuse the function
+            error_comparison[i][0] = abs(errors[0]) # approximate error
+            error_comparison[i][1] = abs(errors[1]) # true error
+            error_comparison[i][2] = low_err_bound # lower error bound
+            error_comparison[i][3] = upp_err_bound # upper error bound
+            error_comparison[i][4] = errors[2] # r
+        return error_comparison
+
+#%%
+
+func = lambda x: np.exp(x)
+sol = np.exp(3) - 1
 a = 0
-b = 12
-m = 2
+b = 3
 
-H_m = (b-a)/m
-prelim_points = np.linspace(a,b,m+1)
-midpoints = np.linspace((prelim_points[0] + prelim_points[1])/2, (prelim_points[-2] + prelim_points[-1])/2, m)
-midpoints_eval = func(midpoints)
-I_m = H_m * np.sum(midpoints_eval)
+func4 = np.zeros((3,2,3))
 
-new_points1 = np.array([a + i*H_m + H_m/6 for i in range(m)])
-new_points2 = np.array([a + i*H_m + 5*H_m/6 for i in range(m)])
-I_3m = (I_m + H_m * np.sum([func(new_points1[i]) + func(new_points2[i]) for i in range(m)]))/3
-approx_error = (I_3m - I_m)/8 # denominator is 3**r - 1
-true_error = sol - I_3m
+for method in range(3):
+    if method == 0:
+        quad = task2(func, .01, comp_trapezoidal_error, a, b, sol, fine=False)
+        func4[method][0][0] = quad[0]
+        func4[method][0][1] = quad[1]
+        func4[method][0][2] = quad[2]
+        
+        quad = task2(func, .0001, comp_trapezoidal_error, a, b, sol, fine=False)
+        func4[method][1][0] = quad[0]
+        func4[method][1][1] = quad[1]
+        func4[method][1][2] = quad[2]
+    if method == 1:
+        quad = task2(func, .01, comp_midpoint_error, a, b, sol, fine=False)
+        func4[method][0][0] = quad[0]
+        func4[method][0][1] = quad[1]
+        func4[method][0][2] = quad[2]
+        
+        quad = task2(func, .0001, comp_midpoint_error, a, b, sol, fine=False)
+        func4[method][1][0] = quad[0]
+        func4[method][1][1] = quad[1]
+        func4[method][1][2] = quad[2]
+    if method == 2:
+        quad = task2(func, .01, comp_simpsons_error, a, b, sol, fine=False)
+        func4[method][0][0] = quad[0]
+        func4[method][0][1] = quad[1]
+        func4[method][0][2] = quad[2]
+        
+        quad = task2(func, .0001, comp_simpsons_error, a, b, sol, fine=False)
+        func4[method][1][0] = quad[0]
+        func4[method][1][1] = quad[1]
+        func4[method][1][2] = quad[2]
+        
+#%%
 
+func4_fine = np.zeros((2,10,5))
+
+func4_fine[0] = task2(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
+func4_fine[1] = task2(func, .01, comp_midpoint_error, a, b, sol, fine=True)
