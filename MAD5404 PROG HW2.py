@@ -379,7 +379,8 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-ax.table(cellText=func1_fine[0],colLabels=columns,loc='upper center')
+c_widths = [1/14,1/14,1/7,1/14,1/14,1/14,1/14]
+ax.table(cellText=func1_fine[0],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 ax.set_title('Composite Trapezoidal with GUSSR for Function 1')
 plt.tight_layout()
 
@@ -393,7 +394,7 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-ax.table(cellText=func1_fine[1],colLabels=columns,loc='upper center')
+ax.table(cellText=func1_fine[1],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 ax.set_title('Composite Midpoint with GUSSR for Function 1')
 plt.tight_layout()
 
@@ -415,7 +416,7 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-ax.table(cellText=func2_fine[0],colLabels=columns,loc='upper center')
+ax.table(cellText=func2_fine[0],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 ax.set_title('Composite Trapezoidal with GUSSR for Function 2')
 plt.tight_layout()
 
@@ -428,7 +429,7 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center')
+ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 ax.set_title('Composite Midpoint with GUSSR for Function 2')
 plt.tight_layout()
         
@@ -450,7 +451,7 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-ax.table(cellText=func3_fine[0],colLabels=columns,loc='upper center')
+ax.table(cellText=func3_fine[0],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 ax.set_title('Composite Trapezoidal with GUSSR for Function 3')
 plt.tight_layout()
 
@@ -463,7 +464,7 @@ fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center')
+ax.table(cellText=func2_fine[1],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 ax.set_title('Composite Midpoint with GUSSR for Function 3')
 plt.tight_layout()
         
@@ -639,29 +640,30 @@ func4_fine = np.zeros((2,10,9))
 
 func4_fine[0] = task2(func, .01, comp_trapezoidal_error, a, b, sol, fine=True)
 columns = ('k', '2**k', 'Number of function evals', 'I_2m', 'Approx. Error', 'Exact Error', 'Lower Bound for Error', 'Upper Bound for Error', 'Computed r')
-fig, ax = plt.subplots(figsize=[15, 9])
+fig, ax = plt.subplots(figsize=[16, 3])
 
 # hide axes
 fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-tbl = ax.table(cellText=func4_fine[0],colLabels=columns,loc='upper center')
-tbl.set_fontsize(30)
+c_widths = [1/18,1/18,1/9,1/18,1/18,1/18,1/9,1/9,1/11]
+tbl = ax.table(cellText=func4_fine[0],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
+
 ax.set_title('Composite Trapezoidal with GUSSR for Function 4')
+tbl.set_fontsize(30)
 plt.tight_layout()
 
-#%%
 func4_fine[1] = task2(func, .01, comp_midpoint_error, a, b, sol, fine=True)
 columns = ('k', '3**k', 'Number of function evals', 'I_3m', 'Approx. Error', 'Exact Error', 'Lower Bound for Error', 'Upper Bound for Error', 'Computed r')
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=[16, 3])
 
 # hide axes
 fig.patch.set_visible(False)
 ax.axis('off')
 ax.axis('tight')
 
-tbl = ax.table(cellText=func4_fine[1],colLabels=columns,loc='upper center')
+tbl = ax.table(cellText=func4_fine[1],colLabels=columns,loc='upper center',colWidths=c_widths/np.sum(c_widths))
 tbl.set_fontsize(30)
 ax.set_title('Composite Midpoint with GUSSR for Function 4')
 plt.tight_layout()
